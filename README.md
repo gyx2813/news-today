@@ -1,8 +1,5 @@
 # toutiao
 
-> 模仿今日头条
-> 请看 summary.md 
-
 ## Build Setup
 
 ``` bash
