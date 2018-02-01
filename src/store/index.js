@@ -3,28 +3,22 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import mutations from './mutations'
-
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
-    state:{
-        count:0,
-        collectionNews:[],
-        newsArr:[]
+const state = {
+    collectionArr:[]
+}
+
+const mutations = {
+    add(state,item){
+        state.collectionArr.push(item)
     },
-    //使用处进行 commit
-    mutations,
-    getters:{
-        nowTime(state){
-            return new Date() - 0 + '-' + state.count;
-        },
-        getNewsList(state){
-            return state.collectionNews;
-        },
-        getNewsArr(state){
-            return state.newsArr;
-        }
+    reduce(state,item){
+        state.collectionArr = state.collectionArr.filter(o => o.id !== item.id)
     }
-});
-export default store;
+}
+
+export default new Vuex.Store({
+    state,
+    mutations
+})

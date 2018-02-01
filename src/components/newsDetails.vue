@@ -12,7 +12,7 @@
         <article class="newsInfo" v-if="newShow==2">
             <div class="title">{{ newsInfo.title }}</div>
             <div class="aticle_author" v-if="newsInfo.media_user">
-                <a href="">
+                <a :href="newsInfo.media_user.url">
                     <div class="avatar">
                         <img :src="newsInfo.media_user.avatar_url" alt="">
                     </div>
@@ -24,8 +24,7 @@
                 </div>
 
                 <div class="gz" @click="collection">
-                    <span v-if="!isCollection">收藏</span>
-                    <span v-if="isCollection">取消收藏</span>
+                    <span>{{isCollection}}</span>
                 </div>
 
             </div>
@@ -44,18 +43,15 @@
 
 </template>
 <script>
-import { XHeader, Actionsheet, TransferDom, ButtonTab, ButtonTabItem } from 'vux'
+import { XHeader } from 'vux'
 import { ajax2 } from '../common/js/ajax'
 import { utils } from '../common/js/utils'
 import share from '../components/share.vue'
-import {mapState,mapMutations,mapGetters} from 'vuex'
+import index from '../store/index'
+import {mapState, mapMutations} from 'vuex'
     export default{
         components:{
             XHeader,
-            Actionsheet,
-            TransferDom,
-            ButtonTab,
-            ButtonTabItem,
             share
         },
         data(){
@@ -65,26 +61,19 @@ import {mapState,mapMutations,mapGetters} from 'vuex'
                 souceUrl:this.$route.params.id,
                 newitem:{},
                 newShow:1,             //新闻详情展示
-                isShare:false,        //分享组件
-                isCollection:false
+                isShare:false      //分享组件
             }
         },
-        created(){
-
-        },
-        mounted(){
-            this.requestInfo();
-        },
         methods:{
-            requestInfo(){
+            ...mapMutations(['add','reduce']),
+            _getNewsDetial(){
                 if(this.souceUrl){
                     let url = 'https://m.toutiao.com/' + this.souceUrl + '/info/';
                     let self = this;
-                    ajax2(url,function(data){
-                        self.newsInfo = data.data;
-                        self.newShow = 2;
-                    },function(msg){
-                        alert(msg);
+                    ajax2(url).then((res) => {
+                        self.newsInfo = res.data
+                        self.newShow = 2
+                        console.log(res.data)
                     })
                 }else{
                     console.log('离开本页，不执行请求！');
@@ -95,23 +84,31 @@ import {mapState,mapMutations,mapGetters} from 'vuex'
             unfold_field(){
                 this.$refs.news_content.style.height = 'auto';
                 this.$refs.unfold_field.style.display = 'none';
-            }
-            ,share(){
+            },
+            share(){
                 this.isShare = true;
                 document.getElementsByTagName('body')[0].style.overflow = 'hidden';
-            }
-            ,hide_Share(){
+            },
+            hide_Share(){
                 this.isShare = false;
-            }
-            ,collection(){
-                console.log('收藏');
-                if(!this.isCollection){
-                    console.log(this.newitem.item_id);
-                    this.$store.commit('addCollection',this.newitem);
-                    this.isCollection = !this.isCollection;
-                }else{
-
+            },
+            collection(){
+                let str = this.isCollection
+                if(str === '关注'){
+                    this.add(this.newsInfo.media_user)
                 }
+            }
+        },
+        computed:{
+            ...mapState(['collectionArr']),
+            isCollection(){
+                let str = ''
+                if(JSON.stringify(this.collectionArr).indexOf(JSON.stringify(this.newsInfo.media_user)) === -1){
+                    str = '关注'
+                }else{
+                    str = '已关注'
+                }
+                return str
             }
         },
         watch:{
@@ -133,9 +130,10 @@ import {mapState,mapMutations,mapGetters} from 'vuex'
         activated(){
             this.souceUrl = this.$route.params.id;
 //            this.newitem = JSON.parse(this.$route.query.newsItem);
-            this.requestInfo();
-            this.isCollection = false;
-        }
+            this._getNewsDetial()
+            this.isCollection = false
+        },
+        index
     }
 </script>
 <style rel="stylesheet/scss" lang="scss">
@@ -143,7 +141,6 @@ import {mapState,mapMutations,mapGetters} from 'vuex'
         width: 100%;
         background-color: #FFF;
         z-index: 999;
-        /*position: relative;*/
         position: absolute;
         top:0;
         .vux-header{
@@ -220,7 +217,7 @@ import {mapState,mapMutations,mapGetters} from 'vuex'
                     }
                 }
                 .gz{
-                    background-color: #2a90d7;
+                    background-color: #f85959;
                     display: block;
                     text-align: center;
                     color: hsla(0,0%,100%,.96);

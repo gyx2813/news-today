@@ -1,92 +1,15 @@
 <template>
   <div id="collection">
-      <h5 class="nodata" v-if="newsList.length==0">
+      <h5 class="nodata">
           <div>暂无数据</div>
           <h5>(快去收藏新闻吧)</h5>
       </h5>
-
-      <ul class="news-content" >
-
-          <router-link class="news-item" v-for="(item,index) in newsList"
-                       :to ='{
-                        path: "/newsDetails" + item.source_url,
-                        query:{
-                            newsItem:JSON.stringify(item)
-                        }
-                   }'
-
-                       tag='li'
-                       :key='index'
-          >
-
-              <p class="news-title">{{item.title}}</p>
-              <ul class="img-wrapper" v-if="item.image_list">
-                  <li v-for="(item,index) in item.image_list">
-                      <img v-lazy="item['url']"  alt="">
-                  </li>
-              </ul>
-              <div class="bottom-title">
-                  <span class="avIcon" v-show="item.label==='广告'">广告</span>
-                  <span class="writer">{{item.media_name}}</span> &nbsp;&nbsp;
-                  <span class="comment_count">评论&nbsp;{{item.comment_count}}</span>
-                  <span class="datetime">{{item.datetime|date}}</span>
-              </div>
-          </router-link>
-      </ul>
-
-      <router-view></router-view>
-
   </div>
 </template>
 
-<script>
-    import {utils} from '../common/js/utils'
-    import bottom from './bottom'
+<script type="text/ecmascript-6">
   export default {
-      name:'collection',
-      components:{
-          bottom
-      },
-      data(){
-          return {
-              newsList : [],
-          }
-      },
-      created(){
-          if(utils.localstorage.readdata('news')){
-              let list = utils.localstorage.readdata('news');
-              console.log(list);
-              this.$store.commit('initCollection',list);
-          }
-      },
-      filters: {
-          date: function(time) {
-              if (!time) {
-                  return ''
-              }
-              let time1 = new Date(time) - 0;
-              let time2 = new Date() - 0;
-              let time3 = time2 - time1;
-              let time4 = parseInt(time3/1000/60);
-              let time5;
-              if(time4>0){
-                  time5 = time4 + '分钟前';
-              }else if(time4 <=0){
-                  time5 = '刚刚'
-              }else if(time4 > 60){
-                  time5 = parseInt(time4/60) + '时前';
-              }
-              return time5;
-          }
-      },
-      mounted(){
-      },
-      activated(){
-          this.newsList = this.$store.state.collectionNews;
-          console.log(this.newsList);
-      },
-      updated(){
-      }
+      name:'collection'
   }
 </script>
 

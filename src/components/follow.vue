@@ -1,27 +1,105 @@
 <template>
   <div id="follow">
-      <h1>暂未实现</h1>
+      <x-header>
+          <span>关注列表</span>
+      </x-header>
+      <h1 v-show="!collectionArr">{{msg}}</h1>
+      <ul class="collectItem">
+          <li v-for="item in this.collectionArr">
+              <div class="avatar">
+                  <img :src="item.avatar_url" />
+              </div>
+              <div class="name">
+                  {{item.screen_name}}
+                  <img src="https://s3b.pstatp.com/growth/mobile_detail/image/toutiaohao_tag_bc28ef080879ea46945f90a280f66c28.svg" alt="">
+              </div>
+              <div class="btn" @click="remove(item)">取消关注</div>
+          </li>
+      </ul>
   </div>
 </template>
 
 <script>
-export default {
-}
+    import {XHeader} from 'vux'
+    import {mapState,mapMutations} from 'vuex'
+    export default {
+        data () {
+            return {
+                msg:'关注列表'
+            }
+        },
+        computed:mapState(['collectionArr']),
+        methods:{
+            ...mapMutations(['reduce']),
+            remove(item){
+                this.reduce(item)
+                console.log(this.collectionArr)
+            }
+        },
+        components:{
+            XHeader
+        }
+    }
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+    .vux-header{
+        width: 100%;
+        position: fixed;
+        top: 0;
+        background-color:#d43d3d;
+        z-index: 3;
+
+        .vux-header-left .vux-header-back{
+            color: #fff;
+        }
+        .vux-header-left .left-arrow:before{
+            border-color: #fff;
+            border-width: 1px 0 0 1px;
+        }
+    }
     #follow{
         width: 100%;
         text-align: center;
         position: absolute;
         top:0;
         min-height: 100%;
-        h1{
-            font-size: 28px;
-            margin-top: 200px;
-            color: #ccc;
-            padding: 20px 0;
-
+    }
+    .collectItem{
+        padding: 0 10px 0 10px;
+        li{
+            padding:12px 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+            &:after{
+                content: '';
+                position: absolute;
+                bottom: 0;
+                width: 200%;
+                height: 1px;
+                background-color: #7e8c8d;
+                left: -50%;
+                transform: scale(0.5);
+            }
+            .btn{width:70px;height: 30px;background:#f85959;border-radius:5px;color: #fff;font-size: 14px;text-align: center;line-height:30px}
+        }
+        .avatar{
+            height: 36px;
+            width: 36px;
+            border: 1px solid blueviolet;
+            img{
+                width: 100%;
+            }
+        }
+        .name{
+            font-size: 16px;
+            flex: 1 0;
+            img{
+                height: 16px;
+                padding-left: 10px;
+            }
         }
     }
 </style>
