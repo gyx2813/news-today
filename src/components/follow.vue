@@ -3,7 +3,7 @@
       <x-header>
           <span>关注列表</span>
       </x-header>
-      <h1 v-show="!collectionArr">{{msg}}</h1>
+      <h5 v-show="this.collectionArr.length===0">快去关注吧!</h5>
       <ul class="collectItem">
           <li v-for="item in this.collectionArr">
               <div class="avatar">
@@ -33,7 +33,6 @@
             ...mapMutations(['reduce']),
             remove(item){
                 this.reduce(item)
-                console.log(this.collectionArr)
             }
         },
         components:{
@@ -47,7 +46,7 @@
         width: 100%;
         position: fixed;
         top: 0;
-        background-color:#d43d3d;
+        background-color:#d43d3d!important;
         z-index: 3;
 
         .vux-header-left .vux-header-back{
@@ -64,9 +63,16 @@
         position: absolute;
         top:0;
         min-height: 100%;
+        h5{
+            text-align: center;
+            color: #ccc;
+            font-size: 28px;
+            margin-top: 200px;
+            line-height: 40px;
+        }
     }
     .collectItem{
-        padding: 0 10px 0 10px;
+        padding: 50px 10px 0 10px;
         li{
             padding:12px 0;
             display: flex;
@@ -88,7 +94,6 @@
         .avatar{
             height: 36px;
             width: 36px;
-            border: 1px solid blueviolet;
             img{
                 width: 100%;
             }

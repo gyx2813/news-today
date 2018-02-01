@@ -73,7 +73,7 @@ import {mapState, mapMutations} from 'vuex'
                     ajax2(url).then((res) => {
                         self.newsInfo = res.data
                         self.newShow = 2
-                        console.log(res.data)
+                        //console.log(res.data)
                     })
                 }else{
                     console.log('离开本页，不执行请求！');
@@ -103,6 +103,7 @@ import {mapState, mapMutations} from 'vuex'
             ...mapState(['collectionArr']),
             isCollection(){
                 let str = ''
+                //判断数组中不存在已有对象
                 if(JSON.stringify(this.collectionArr).indexOf(JSON.stringify(this.newsInfo.media_user)) === -1){
                     str = '关注'
                 }else{
@@ -131,7 +132,6 @@ import {mapState, mapMutations} from 'vuex'
             this.souceUrl = this.$route.params.id;
 //            this.newitem = JSON.parse(this.$route.query.newsItem);
             this._getNewsDetial()
-            this.isCollection = false
         },
         index
     }
