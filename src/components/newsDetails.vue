@@ -24,7 +24,8 @@
                 </div>
 
                 <div class="gz" @click="collection">
-                    <span>{{isCollection}}</span>
+                    <span v-if="this.isCollect===false">关注</span>
+                    <span v-else>已关注</span>
                 </div>
 
             </div>
@@ -61,7 +62,9 @@ import {mapState, mapMutations} from 'vuex'
                 souceUrl:this.$route.params.id,
                 newitem:{},
                 newShow:1,             //新闻详情展示
-                isShare:false      //分享组件
+                isShare:false,      //分享组件
+                isCollect:false,
+                collectArr:[]
             }
         },
         methods:{
@@ -74,6 +77,7 @@ import {mapState, mapMutations} from 'vuex'
                         self.newsInfo = res.data
                         self.newShow = 2
                         //console.log(res.data)
+                        self.isCollection()
                     })
                 }else{
                     console.log('离开本页，不执行请求！');
@@ -92,31 +96,39 @@ import {mapState, mapMutations} from 'vuex'
             hide_Share(){
                 this.isShare = false;
             },
+            setCollect(){
+                window.sessionStorage.setItem('collectData',JSON.stringify(this.collectArr))
+            },
             collection(){
-                let str = this.isCollection
-                if(str === '关注'){
-                    this.add(this.newsInfo.media_user)
+                let collect = JSON.parse(window.sessionStorage.getItem('collectData'))
+                if(this.isCollect === false){
+                    collect.push(this.newsInfo.media_user)
+                    window.sessionStorage.setItem('collectData',JSON.stringify(collect))
+                    this.isCollect = true
+                }else{
+                    console.log('已关注')
+                }
+            },
+            isCollection(){
+                let collect = window.sessionStorage.getItem('collectData')
+                if(collect === null){
+                    this.isCollect = false
+                }else{
+                    //判断数组中不存在已有对象
+                    if(collect.indexOf(JSON.stringify(this.newsInfo.media_user)) === -1){
+                        this.isCollect = false
+                    }else{
+                        this.isCollect = true
+                    }
                 }
             }
         },
         computed:{
-            ...mapState(['collectionArr']),
-            isCollection(){
-                let str = ''
-                //判断数组中不存在已有对象
-                if(JSON.stringify(this.collectionArr).indexOf(JSON.stringify(this.newsInfo.media_user)) === -1){
-                    str = '关注'
-                }else{
-                    str = '已关注'
-                }
-                return str
-            }
+            ...mapState(['collectionArr'])
         },
         watch:{
             '$route'(){
-                this.$refs.news_content.style.height = '800px';
-                this.$refs.unfold_field.style.display = 'block';
-                document.getElementsByTagName('body')[0].style.overflow = 'auto';
+                this.isCollection()
             }
         },
         filters:{
@@ -127,6 +139,9 @@ import {mapState, mapMutations} from 'vuex'
                 let time3 = time2.format('MM-dd hh:mm:ss');
                 return time3;
             }
+        },
+        created(){
+            this.setCollect()
         },
         activated(){
             this.souceUrl = this.$route.params.id;

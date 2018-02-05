@@ -3,9 +3,9 @@
       <x-header>
           <span>关注列表</span>
       </x-header>
-      <h5 v-show="this.collectionArr.length===0">快去关注吧!</h5>
+      <h5 v-show="collectData.length===0">快去关注吧!</h5>
       <ul class="collectItem">
-          <li v-for="item in this.collectionArr">
+          <li v-for="item in collectData">
               <div class="avatar">
                   <img :src="item.avatar_url" />
               </div>
@@ -21,30 +21,51 @@
 
 <script>
     import {XHeader} from 'vux'
+    import Vue from 'vue'
+    import index from '../store/index'
     import {mapState,mapMutations} from 'vuex'
     export default {
         data () {
             return {
-                msg:'关注列表'
+                msg:'关注列表',
+                collectData:[]
             }
         },
-        computed:mapState(['collectionArr']),
+        computed:{
+            ...mapState(['collectionArr']),
+        },
+        mounted(){
+            this.data_init()
+        },
+        created(){
+            this.data_init()
+        },
         methods:{
             ...mapMutations(['reduce']),
             remove(item){
-                this.reduce(item)
+                this.collectData = this.collectData.filter(o => o.id !== item.id)
+                window.sessionStorage.setItem('collectData',JSON.stringify(this.collectData))
+            },
+            data_init(){
+                this.collectData = JSON.parse(window.sessionStorage.getItem('collectData'))
             }
         },
         components:{
             XHeader
-        }
+        },
+        watch:{
+            '$route'(){
+                this.data_init()
+            }
+        },
+        index
     }
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
     .vux-header{
         width: 100%;
-        position: fixed;
+        position: fixed!important;
         top: 0;
         background-color:#d43d3d!important;
         z-index: 3;
